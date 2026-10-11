@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class GutenbergSource:
-    API = "https://gutendex.com/books"
+    API = "https://gutendex.com/books/"
 
     def __init__(self):
         self._client = httpx.AsyncClient(
