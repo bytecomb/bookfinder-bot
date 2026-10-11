@@ -46,9 +46,20 @@ REQUEST_TIMEOUT: int = int(os.getenv("REQUEST_TIMEOUT", "30"))
 PRIVACY_POLICY_URL: str = os.getenv("PRIVACY_POLICY_URL", "https://telegra.ph/BookFinderBot-Privacy-Policy")
 
 # ─── SOURCES (enable/disable) ────────────────────────────────────────────────
+ENABLE_ZLIBRARY: bool = os.getenv("ENABLE_ZLIBRARY", "true").lower() == "true"
+ENABLE_LIBGEN: bool = os.getenv("ENABLE_LIBGEN", "true").lower() == "true"
+ENABLE_ANNAS: bool = os.getenv("ENABLE_ANNAS", "true").lower() == "true"
+ENABLE_ARCHIVE: bool = os.getenv("ENABLE_ARCHIVE", "true").lower() == "true"
+ENABLE_PDFDRIVE: bool = os.getenv("ENABLE_PDFDRIVE", "true").lower() == "true"
 ENABLE_GUTENBERG: bool = os.getenv("ENABLE_GUTENBERG", "true").lower() == "true"
 ENABLE_OPENLIBRARY: bool = os.getenv("ENABLE_OPENLIBRARY", "true").lower() == "true"
-ENABLE_ARCHIVE: bool = os.getenv("ENABLE_ARCHIVE", "true").lower() == "true"
+
+# ─── Z-LIBRARY CREDENTIALS (env only — never hard-code) ───────────────────────
+ZLIB_EMAIL: str = os.getenv("ZLIB_EMAIL", "")
+ZLIB_PASSWORD: str = os.getenv("ZLIB_PASSWORD", "")
+ZLIB_COOKIES: str = os.getenv("ZLIB_COOKIES", "")
+ZLIB_REMIX_USERID: str = os.getenv("ZLIB_REMIX_USERID", "")
+ZLIB_REMIX_USERKEY: str = os.getenv("ZLIB_REMIX_USERKEY", "")
 
 # ─── VALIDATION ──────────────────────────────────────────────────────────────
 def validate():
