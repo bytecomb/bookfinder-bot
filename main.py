@@ -19,6 +19,8 @@ from telegram.ext import (
     CommandHandler,
     MessageHandler,
     CallbackQueryHandler,
+    TypeHandler,
+    ApplicationHandlerStop,
     filters,
 )
 
@@ -82,7 +84,16 @@ async def post_init(application: Application):
     logger.info(f"✅ Bot @{me.username} is running!")
 
 
+async def _owner_gate(update: Update, context):
+    """OWNER_ONLY mode: silently ignore everyone except OWNER_IDS."""
+    user = update.effective_user
+    if not user or user.id not in config.OWNER_IDS:
+        raise ApplicationHandlerStop
+
+
 def _register_handlers(app: Application):
+    if config.OWNER_ONLY:
+        app.add_handler(TypeHandler(Update, _owner_gate), group=-1)
     # Core commands
     app.add_handler(CommandHandler("start", cmd_start))
     app.add_handler(CommandHandler("help", cmd_help))

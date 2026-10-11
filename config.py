@@ -13,6 +13,9 @@ BOT_USERNAME: str = os.getenv("BOT_USERNAME", "BookFinderBot")
 # ─── OWNERS (comma-separated Telegram user IDs via env) ───────────────────────
 OWNER_IDS: list[int] = [int(x) for x in os.getenv("OWNER_IDS", "").replace(" ", "").split(",") if x]
 
+# Only OWNER_IDS may use the bot when true (survives restarts, unlike /lock)
+OWNER_ONLY: bool = os.getenv("OWNER_ONLY", "").lower() in ("1", "true", "yes")
+
 # ─── GROUP / CHANNEL ─────────────────────────────────────────────────────────
 REQUEST_GROUP_ID: int = int(os.getenv("REQUEST_GROUP_ID", "0"))       # e.g. -1001234567890
 REQUEST_GROUP_LINK: str = os.getenv("REQUEST_GROUP_LINK", "https://t.me/your_group")
