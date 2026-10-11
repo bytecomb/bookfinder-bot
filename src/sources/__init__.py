@@ -98,7 +98,8 @@ async def download_book(book: BookResult) -> Optional[bytes]:
     source = book.source
     try:
         if source == "Z-Library":
-            url = book.download_url or await _zlib.get_download_url(book, book.extra)
+            # search() leaves download_url empty on purpose; always resolve.
+            url = await _zlib.get_download_url(book, book.extra)
             if url:
                 return await _zlib.download_file(url)
 
@@ -114,12 +115,14 @@ async def download_book(book: BookResult) -> Optional[bytes]:
             return None
 
         elif source == "Internet Archive":
-            url = book.download_url or await _archive.get_download_url(book)
+            # search() leaves download_url empty on purpose; always resolve.
+            url = await _archive.get_download_url(book)
             if url:
                 return await _archive.download_file(url)
 
         elif source == "PDFDrive":
-            url = book.download_url or await _pdfdrive.get_download_url(book)
+            # search() leaves download_url empty on purpose; always resolve.
+            url = await _pdfdrive.get_download_url(book)
             if url:
                 return await _pdfdrive.download_file(url)
 

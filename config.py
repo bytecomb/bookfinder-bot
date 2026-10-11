@@ -50,7 +50,7 @@ ENABLE_ZLIBRARY: bool = os.getenv("ENABLE_ZLIBRARY", "true").lower() == "true"
 ENABLE_LIBGEN: bool = os.getenv("ENABLE_LIBGEN", "true").lower() == "true"
 ENABLE_ANNAS: bool = os.getenv("ENABLE_ANNAS", "true").lower() == "true"
 ENABLE_ARCHIVE: bool = os.getenv("ENABLE_ARCHIVE", "true").lower() == "true"
-ENABLE_PDFDRIVE: bool = os.getenv("ENABLE_PDFDRIVE", "true").lower() == "true"
+ENABLE_PDFDRIVE: bool = os.getenv("ENABLE_PDFDRIVE", "false").lower() == "true"  # site largely dead; keep off by default
 ENABLE_GUTENBERG: bool = os.getenv("ENABLE_GUTENBERG", "true").lower() == "true"
 ENABLE_OPENLIBRARY: bool = os.getenv("ENABLE_OPENLIBRARY", "true").lower() == "true"
 

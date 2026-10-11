@@ -320,10 +320,10 @@ class ZLibrarySource:
                     size_str=size_str or "Unknown",
                     size_bytes=size_bytes,
                     book_id=f"zlib_{bid}",
-                    download_url=href,
+                    download_url="",  # resolved later via get_download_url; href is a page, not a file
                     cover_url=book.get("cover") or "",
                     source="Z-Library",
-                    extra={"domain": domain, "hash": book_hash, "bid": bid},
+                    extra={"domain": domain, "hash": book_hash, "bid": bid, "href": href},
                 ))
 
         except Exception as e:

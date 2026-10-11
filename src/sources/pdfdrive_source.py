@@ -193,7 +193,7 @@ class PDFDriveSource:
                             size_str=size_str,
                             size_bytes=size_bytes,
                             book_id=f"pdfdrive_{raw_id}",
-                            download_url=detail_url,
+                            download_url="",  # resolved later via get_download_url; detail_url is a page
                             cover_url=cover_url,
                             source="PDFDrive",
                             extra={"detail_url": detail_url, "pages": pagecount},

@@ -95,7 +95,11 @@ def build_buttons(results: list[BookResult], query: str, page: int, has_next: bo
     for book in results:
         emoji = FORMAT_EMOJI.get(book.format, "📄")
         label = f"{emoji} {book.title[:26]}… ({book.format.upper()}, {book.size_str})"
-        keyboard.append([InlineKeyboardButton(label, callback_data=f"dl_{book.book_id}")])
+        if book.source == "Anna's Archive" and book.download_url:
+            # Anna's Archive has no direct download; link out to the page instead.
+            keyboard.append([InlineKeyboardButton(label + " 🔗", url=book.download_url)])
+        else:
+            keyboard.append([InlineKeyboardButton(label, callback_data=f"dl_{book.book_id}")])
 
     nav = []
     if page > 1:
@@ -275,6 +279,16 @@ async def handle_book_download(update: Update, context: ContextTypes.DEFAULT_TYP
         db.schedule_delete(m.chat_id, m.message_id, AUTO_DELETE_HOURS)
         return
 
+    if book.source == "Anna's Archive" and book.download_url:
+        m = await msg.reply_text(
+            f"🔗 <b>{_html.escape(book.title[:60])}</b>\n"
+            f"Anna's Archive has no direct download — open it here:\n"
+            f"{book.download_url}",
+            parse_mode=HTML,
+        )
+        db.schedule_delete(m.chat_id, m.message_id, AUTO_DELETE_HOURS)
+        return
+
     progress_msg = await msg.reply_text(
         f"⏳ <b>Preparing download...</b>\n"
         f"📚 {_html.escape(book.title)}\n"
@@ -378,6 +392,14 @@ async def handle_download_callback(update: Update, context: ContextTypes.DEFAULT
     book    = get_cached_book(book_id)
     if not book:
         await query.answer("❌ Book expired. Search again.", show_alert=True)
+        return
+    if book.source == "Anna's Archive" and book.download_url:
+        await query.message.reply_text(
+            f"🔗 <b>{_html.escape(book.title[:60])}</b>\n"
+            f"Anna's Archive has no direct download — open it here:\n"
+            f"{book.download_url}",
+            parse_mode=HTML,
+        )
         return
     await _do_download_from_callback(query.message, query.from_user, book, context)
 
