@@ -1,0 +1,28 @@
+# render.yaml — BookFinderBot (public-domain edition), Render free tier
+services:
+  - type: web
+    name: bookfinderbot
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: "10000"
+      - key: BOT_TOKEN
+        sync: false
+      - key: OWNER_IDS
+        sync: false
+      - key: REQUEST_GROUP_ID
+        sync: false
+      - key: REQUEST_GROUP_LINK
+        sync: false
+      - key: REQUEST_GROUP_USERNAME
+        sync: false
+      - key: START_IMAGE_URL
+        sync: false
+      - key: USE_WEBHOOK
+        value: "true"
+      - key: MAX_FILE_SIZE_MB
+        value: "45"
+      - key: AUTO_DELETE_HOURS
+        value: "24"
