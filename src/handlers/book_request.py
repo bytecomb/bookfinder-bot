@@ -259,13 +259,6 @@ async def handle_book_download(update: Update, context: ContextTypes.DEFAULT_TYP
     in_group = msg.chat.type in ("group", "supergroup", "channel")
     owner    = is_owner(user.id)
 
-    if not in_group and not owner:
-        m = await msg.reply_text(
-            "❌ Please request books in the group, not in DMs!\n\n" + DM_REDIRECT_TEXT,
-            parse_mode=HTML,
-        )
-        db.schedule_delete(m.chat_id, m.message_id, AUTO_DELETE_HOURS)
-        return
 
     if db.is_locked() and not owner:
         m = await msg.reply_text(BOT_LOCKED_TEXT, parse_mode=HTML)
@@ -392,13 +385,6 @@ async def handle_download_callback(update: Update, context: ContextTypes.DEFAULT
 async def _do_download_from_callback(msg, user, book: BookResult, context: ContextTypes.DEFAULT_TYPE):
     owner    = is_owner(user.id)
     in_group = msg.chat.type in ("group", "supergroup", "channel")
-    if not in_group and not owner:
-        await context.bot.send_message(
-            user.id,
-            "❌ Please use the group to download!\n" + DM_REDIRECT_TEXT,
-            parse_mode=HTML,
-        )
-        return
     if db.is_locked() and not owner:
         return
 
@@ -443,25 +429,25 @@ async def _do_download_from_callback(msg, user, book: BookResult, context: Conte
         await progress_msg.edit_text(f"❌ Failed to send: {e}", parse_mode=HTML)
 
 
-# ── DM redirect ───────────────────────────────────────────────────────────────
+# ── DM search ────────────────────────────────────────────────────────────────
 
 async def handle_dm(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Private chat: any text is treated as a search query."""
     user = update.effective_user
     msg  = update.effective_message
-    text = msg.text or ""
-    if text.startswith("/"):
+    text = (msg.text or "").strip()
+    if not text or text.startswith("/"):
         return
     db.add_user(user.id)
-    if is_owner(user.id):
+    if db.is_locked() and not is_owner(user.id):
+        m = await msg.reply_text(BOT_LOCKED_TEXT, parse_mode=HTML)
+        db.schedule_delete(m.chat_id, m.message_id, AUTO_DELETE_HOURS)
         return
-    from config import REQUEST_GROUP_LINK, REQUEST_GROUP_USERNAME
-    keyboard = [[InlineKeyboardButton("📚 Join Request Group", url=REQUEST_GROUP_LINK)]]
-    m = await msg.reply_text(
-        f"{DM_REDIRECT_TEXT}\n\n"
-        f"👉 <b>Group:</b> @{REQUEST_GROUP_USERNAME}\n\n"
-        f"Then type: <code>#book book name</code>\n\n"
-        f"{SCAM_WARNING}",
-        parse_mode=HTML,
-        reply_markup=InlineKeyboardMarkup(keyboard),
-    )
-    db.schedule_delete(m.chat_id, m.message_id, AUTO_DELETE_HOURS)
+    lower = text.lower()
+    for tag in ("#request", "#book"):
+        if lower.startswith(tag):
+            text = text[len(tag):].strip()
+            break
+    if not text:
+        return
+    await _do_search(msg, text, page=1, context=context)
