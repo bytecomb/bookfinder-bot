@@ -13,7 +13,7 @@ import sys
 from threading import Thread
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
-from telegram import Update
+from telegram import Update, BotCommand, BotCommandScopeChat, BotCommandScopeDefault
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -82,6 +82,34 @@ async def post_init(application: Application):
     setup_scheduler(application.bot)
     me = await application.bot.get_me()
     logger.info(f"✅ Bot @{me.username} is running!")
+    await _set_command_menu(application.bot)
+
+
+PUBLIC_COMMANDS = [
+    BotCommand("start", "Welcome"),
+    BotCommand("help", "How to search and download"),
+    BotCommand("sources", "Book sources"),
+    BotCommand("terms", "Terms & Conditions"),
+    BotCommand("privacy", "Privacy Policy"),
+    BotCommand("disclaimer", "Disclaimer"),
+]
+OWNER_COMMANDS = PUBLIC_COMMANDS + [
+    BotCommand("lock", "Lock bot for everyone else"),
+    BotCommand("unlock", "Unlock bot"),
+    BotCommand("broadcast", "Message all users"),
+    BotCommand("restart", "Restart the bot"),
+]
+
+
+async def _set_command_menu(bot):
+    """Show the / command menu in Telegram; owners also see owner commands."""
+    try:
+        await bot.set_my_commands(PUBLIC_COMMANDS, scope=BotCommandScopeDefault())
+        for oid in config.OWNER_IDS:
+            await bot.set_my_commands(OWNER_COMMANDS, scope=BotCommandScopeChat(oid))
+        logger.info("✅ Command menu set")
+    except Exception as e:
+        logger.warning(f"Setting command menu failed: {e}")
 
 
 async def _owner_gate(update: Update, context):
