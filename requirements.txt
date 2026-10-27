@@ -10,3 +10,5 @@ Pillow==10.4.0
 apscheduler==3.10.4
 cachetools==5.3.3
 fake-useragent==1.5.1
+# eMudhra/emSign (Render advisory 2026-10-26): floor is 2026.10.19, not 2026.10.18 (18 removed all emSign roots, 19 restores unaffected ones)
+certifi>=2026.10.19
